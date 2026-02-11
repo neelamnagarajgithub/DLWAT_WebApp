@@ -39,15 +39,32 @@ export default function Home() {
     if (!file) return;
     setLoading(true);
     setError(null);
-    const formData = new FormData();
-    formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:8000/api/predict", { method: "POST", body: formData });
-      if (!res.ok) throw new Error((await res.json()).error || res.statusText);
-      const data = await res.json();
-      setResult(data);
+      // Import Gradio client
+      const { Client } = await import("@gradio/client");
+      
+      // Convert file to blob with proper metadata as per Gradio docs
+      const fileBlob = new Blob([file], { type: file.type });
+      
+      // Create a proper file object with metadata for Gradio
+      const gradioFile = new File([fileBlob], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+      
+      // Connect to your Gradio space
+      const client = await Client.connect("NagarajDev/dlwat");
+      
+      // Call predict with the file as per the docs
+      const result = await client.predict("/predict", { 
+        file: gradioFile 
+      });
+      
+      console.log("Gradio result:", result.data);
+      setResult(result.data);
     } catch (e: any) {
+      console.error("Gradio error:", e);
       setError(e.message || "Upload failed");
       setResult(null);
     } finally {
@@ -55,8 +72,8 @@ export default function Home() {
     }
   };
 
-  // Handle the new rich API response format
-  const output = result ?? {};
+  // Handle the new rich API response format - data comes wrapped in an array
+  const output = (Array.isArray(result) ? result[0] : result) ?? {};
   const summary = output.summary ?? {};
   const clusterProfiles = output.cluster_profiles ?? {};
   const predictionsPreview = Array.isArray(output.predictions_preview) ? output.predictions_preview : [];
