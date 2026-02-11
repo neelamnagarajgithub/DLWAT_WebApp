@@ -100,10 +100,10 @@ export default function Home() {
   
   // Group predictions by confidence ranges for visualization
   const confidenceRanges = {
-    'High (0.8-1.0)': confidenceValues.filter(c => c >= 0.8).length,
-    'Medium (0.6-0.8)': confidenceValues.filter(c => c >= 0.6 && c < 0.8).length,
-    'Low (0.4-0.6)': confidenceValues.filter(c => c >= 0.4 && c < 0.6).length,
-    'Very Low (0-0.4)': confidenceValues.filter(c => c < 0.4).length,
+    'High (0.8-1.0)': confidenceValues.filter((c: number) => c >= 0.8).length,
+    'Medium (0.6-0.8)': confidenceValues.filter((c: number) => c >= 0.6 && c < 0.8).length,
+    'Low (0.4-0.6)': confidenceValues.filter((c: number) => c >= 0.4 && c < 0.6).length,
+    'Very Low (0-0.4)': confidenceValues.filter((c: number) => c < 0.4).length,
   };
   
   const confRangeLabels = Object.keys(confidenceRanges);
@@ -648,7 +648,7 @@ export default function Home() {
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                      {(showFullPreview ? predictionsPreview : predictionsPreview.slice(0, 20)).map((prediction, index) => (
+                      {(showFullPreview ? predictionsPreview : predictionsPreview.slice(0, 20)).map((prediction: any, index: number) => (
                         <tr key={prediction.window_id || index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             #{prediction.window_id ?? index}
